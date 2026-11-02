@@ -552,6 +552,19 @@
         .userchip{ font-size:12px; }
       }
     </style>
+  
+    <style>
+      .pager{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding:14px 16px; border-top:1px solid var(--line); }
+      .pager-left{ display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600; color:var(--ink-2); flex-wrap:wrap; }
+      .pager-left select{ padding:8px 10px; border:1.5px solid var(--line-strong); border-radius:10px; font-weight:800; background:var(--card); color:var(--ink); font-size:14px; }
+      .pager-info{ color:var(--ink-3); }
+      .pager-nav{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+      .pager-nav button{ min-width:38px; height:38px; padding:0 10px; border:1.5px solid var(--line-strong); background:var(--card); border-radius:10px; font-weight:800; color:var(--ink); cursor:pointer; }
+      .pager-nav button.on{ background:var(--orange); border-color:var(--orange); color:#fff; }
+      .pager-nav button:disabled{ opacity:.4; cursor:default; }
+      .pager-ellipsis{ padding:0 4px; font-weight:800; color:var(--ink-3); }
+      @media (max-width:640px){ .pager{ padding:12px; } .pager-nav button{ min-width:42px; height:44px; } }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -2358,9 +2371,23 @@
     function stageProgressOf(xpM){
       if(xpM >= 900) return 4; if(xpM >= 700) return 3; if(xpM >= 450) return 2; if(xpM >= 200) return 1; return 0;
     }
+    let staffPage = 1, staffPerPage = 20;
     function renderAdmin(){
       const totalRounds = DB.runnerQuestions.length + DB.povScenarios.reduce((a,s)=>a+s.decisions.length,0);
       const staffRows = rankList("M");
+      const staffTotalPages = Math.max(1, Math.ceil(staffRows.length / staffPerPage));
+      if(staffPage > staffTotalPages) staffPage = staffTotalPages;
+      const staffStart = (staffPage - 1) * staffPerPage;
+      const pageRows = staffRows.slice(staffStart, staffStart + staffPerPage);
+      const staffPages = (() => {
+        const pages = [];
+        if(staffTotalPages <= 7){ for(let i = 1; i <= staffTotalPages; i++) pages.push(i); }
+        else {
+          const keep = [...new Set([1, 2, staffTotalPages - 1, staffTotalPages, staffPage - 1, staffPage, staffPage + 1])].filter(n => n >= 1 && n <= staffTotalPages).sort((a,b) => a - b);
+          keep.forEach((n, i) => { if(i > 0 && n - keep[i-1] > 1) pages.push("…"); pages.push(n); });
+        }
+        return pages;
+      })();
       $("#view-admin").innerHTML = `
       <div class="page-head">
         <div><span class="tag tag-orange">Quản trị hệ thống</span>
@@ -2377,7 +2404,7 @@
       <div class="card" style="margin-top:20px">
         <div class="table-scroll"><table class="rank-table">
           <thead><tr><th>Nhân viên</th><th>Mã NV</th><th>Chi nhánh / Phòng ban</th><th>Quyền (Google Sheet)</th><th>Tiến độ</th><th style="text-align:right">XP tháng này</th></tr></thead>
-          <tbody>${staffRows.map(p=>{ const role = sheetRoleByCode(p.code); return `
+          <tbody>${pageRows.map(p=>{ const role = sheetRoleByCode(p.code); return `
             <tr class="${p.me?"me":""}">
               <td><span class="who"><span class="ava">${esc(initials(p.name))}</span>${esc(p.name)}${p.me?' <span class="tag tag-orange">Bạn</span>':""}</span></td>
               <td>${esc(p.code)}</td><td>${esc(p.dept)}</td>
@@ -2386,6 +2413,23 @@
               <td style="text-align:right"><b>${p.xp.toLocaleString("vi-VN")}</b></td>
             </tr>`; }).join("")}
           </tbody></table></div>
+        <div class="pager">
+          <div class="pager-left">Hiển thị
+            <select id="staffPerPage" aria-label="Số dòng mỗi trang">
+              <option value="10" ${staffPerPage===10?"selected":""}>10</option>
+              <option value="20" ${staffPerPage===20?"selected":""}>20</option>
+              <option value="50" ${staffPerPage===50?"selected":""}>50</option>
+              <option value="100" ${staffPerPage===100?"selected":""}>100</option>
+            </select>
+            dòng/trang
+            <span class="pager-info">Hiển thị ${staffRows.length ? staffStart + 1 : 0}–${Math.min(staffStart + staffPerPage, staffRows.length)} trên ${staffRows.length} nhân viên</span>
+          </div>
+          <div class="pager-nav">
+            <button data-page="${staffPage - 1}" ${staffPage === 1 ? "disabled" : ""}>← Trước</button>
+            ${staffPages.map(n => n === "…" ? '<span class="pager-ellipsis">…</span>' : `<button data-page="${n}" class="${n === staffPage ? "on" : ""}">${n}</button>`).join("")}
+            <button data-page="${staffPage + 1}" ${staffPage === staffTotalPages ? "disabled" : ""}>Sau →</button>
+          </div>
+        </div>
         <p style="padding:12px 16px 16px;font-size:13px;color:var(--ink-3);font-weight:600;line-height:1.55">Quyền trong bảng này lấy từ cột <b>Quyền</b> của Google Sheet nhân sự theo Mã NV. Muốn cấp hoặc thu quyền Quản trị, sửa trực tiếp trên Sheet rồi đồng bộ — không cấp quyền ở màn đăng nhập.</p>
       </div>
 
@@ -2444,6 +2488,9 @@
         </div>
       </div>`;
       renderContentLists();
+      document.querySelectorAll(".pager-nav button[data-page]").forEach(btn => btn.addEventListener("click", () => { staffPage = +btn.dataset.page; renderAdmin(); }));
+      const perPageSel = $("#staffPerPage");
+      if(perPageSel) perPageSel.addEventListener("change", () => { staffPerPage = +perPageSel.value; staffPage = 1; renderAdmin(); });
       $("#addTopicForm").addEventListener("submit", e => {
         e.preventDefault();
         const bank = document.querySelector('input[name="tb"]:checked').value;
