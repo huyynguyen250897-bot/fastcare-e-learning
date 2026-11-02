@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f96d00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.json">
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" href="favicon.png" />
@@ -507,6 +512,45 @@
       @media (min-width:821px){ #toastRoot{ bottom:26px; } }
       .toast{ background:var(--dark); color:#ffe9d2; border-radius:14px; padding:13px 17px; font-size:14px; font-weight:600; box-shadow:var(--shadow-lg); display:flex; gap:10px; align-items:center; animation:toastIn .3s ease both; line-height:1.5; }
       @keyframes toastIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+    </style>
+  
+    <!-- Giao diện điện thoại: nút chạm lớn, 1 cột, ẩn gợi ý bàn phím -->
+    <style>
+      @media (max-width:640px){
+        .topbar-in{ padding:8px 12px; gap:10px; }
+        main{ padding:16px 12px 130px; }
+        .page-head h2{ font-size:23px; }
+        .btn, .btn-orange, .btn-ghost{ min-height:52px; font-size:16px; }
+        .field input, .field select, .field textarea{ font-size:16px; padding:14px 15px; }
+        .answer-btn{ padding:16px; font-size:16px; min-height:56px; }
+        .answer-btn .k{ width:30px; height:30px; font-size:14px; }
+        .lane-btns{ width:100%; }
+        .lane-btns button{ flex:1; min-width:64px; height:64px; font-size:22px; }
+        .lane-btns #jumpBtn{ flex:1.4; font-size:18px; }
+        .runner-controls .ctl-hint, #view-pov .ctl-hint{ display:none; }
+        .pov-scene{ height:340px; }
+        .pov-actions .btn, .pov-actions button{ min-height:54px; font-size:16px; }
+        .pov-bubble, .bubble{ font-size:15px; }
+        .modal-box{ width:94vw; max-height:88vh; overflow:auto; }
+        .modal-body{ padding:22px 20px 4px; }
+        .flashcard{ padding:20px 18px; }
+        .flashcard h3{ font-size:22px; }
+        .topic-item{ padding:14px 12px; min-height:52px; }
+        .node{ padding:16px; }
+        table{ font-size:13px; }
+        .admin-grid .panel{ padding:18px; }
+        #tabbar button{ min-height:56px; padding:6px 8px; font-size:12px; }
+        #tabbar button svg{ width:24px; height:24px; }
+        .game-head{ gap:8px; }
+        .qbar{ padding:16px; }
+        .qbar h3{ font-size:18px; }
+        .login-form{ padding:24px 20px 30px; }
+        .login-form h2{ font-size:24px; }
+      }
+      @media (max-width:400px){
+        #xpPill{ font-size:12px; padding:5px 9px; }
+        .userchip{ font-size:12px; }
+      }
     </style>
   </head>
   <body>
