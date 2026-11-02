@@ -1304,12 +1304,10 @@
     function updateChallengeBanners(){
       [["runnerLocknote"],["povLocknote"]].forEach(([id]) => {
         const el = document.getElementById(id); if(!el) return;
-        const span = el.querySelector("span"); if(!span) return;
-        if(!el.dataset.orig) el.dataset.orig = span.innerHTML;
         if(isAdmin()){
-          span.innerHTML = "<b>Chế độ test của quản trị:</b> bạn đang xem trước chặng này — tự do rời màn chơi, quay lại học hoặc sang chặng khác bất cứ lúc nào. Hết tim cũng không bị khóa hay reset tiến độ.";
+          el.style.display = "none";
         } else {
-          span.innerHTML = el.dataset.orig;
+          el.style.display = "";
         }
       });
     }
@@ -2107,11 +2105,8 @@
           g.addColorStop(0,"#ffc93c"); g.addColorStop(1,"#f59e0b");
           roundRect(b.x, b.y, b.w, b.h, 8); ctx.fillStyle = g; ctx.fill();
           ctx.lineWidth = (R.target === i) ? 4.5 : 2.5; ctx.strokeStyle = (R.target === i) ? "#fff" : "#a85f1c"; ctx.stroke();
-          ctx.fillStyle = "#7a3d05"; ctx.font = "900 25px 'Be Vietnam Pro',sans-serif";
-          ctx.fillText("?", b.x + b.w/2, b.y + 31);
-          ctx.beginPath(); ctx.arc(b.x + 10, b.y + 10, 9.5, 0, 7); ctx.fillStyle = "#2b1a10"; ctx.fill();
-          ctx.fillStyle = "#ffd9ae"; ctx.font = "900 11.5px 'Be Vietnam Pro',sans-serif";
-          ctx.fillText(LANE_KEYS[i], b.x + 10, b.y + 14.5);
+          ctx.fillStyle = "#7a3d05"; ctx.font = "900 28px 'Be Vietnam Pro',sans-serif";
+          ctx.fillText(LANE_KEYS[i], b.x + b.w/2, b.y + 32);
         }
         ctx.restore();
         if(R.target === i && !b.off){
