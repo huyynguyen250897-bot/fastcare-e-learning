@@ -1344,7 +1344,7 @@
         const dot = state==="done" ? IC.check : (i+1);
         return (i>0 ? '<span class="step-link'+(S.done[STAGES[i-1].id]?" done":"")+'"></span>' : "") +
           '<span class="step '+(state==="done"?"done":state==="now"?"now":"")+'"><span class="dot">'+dot+'</span>'+st.title+'</span>';
-      }).join("") + '<span class="strip-xp pill pill-xp">⚡ '+S.xp+' XP</span>';
+      }).join("");
     }
     function go(view){
       if(!S.user && view!=="login") return;
